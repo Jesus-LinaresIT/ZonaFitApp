@@ -16,13 +16,38 @@ public class ZonaFitApp {
 
     public static void fitZoneApp(){
         var scanner = new Scanner(System.in);
-        boolean result;
-        IClientDAO clientDao = new ClientDAO();
         boolean leave = false;
 
         while (!leave){
-            System.out.println("""
-              \nMenu App ZonaFit select to option:
+            try{
+                showMenu();
+                leave = getOptions(scanner, leave);
+            }catch (Exception e){
+                System.out.println("Error to execute options: " + e.getMessage());
+            }
+
+            if (!leave){
+                String question = "";
+                boolean cont = true;
+                while (cont){
+                    System.out.println("\nDo you want to select another option? Yes/No");
+                    question = scanner.next().toLowerCase();
+                    if (question.equals("yes") || question.equals("no")) {
+                        cont = false;
+                        if (question.equals("no")){
+                            leave = true;
+                        }
+                    }else {
+                        System.out.println("Incorrect Option. Select to correct answer (Yes/No)\n");
+                    }
+                }
+            }
+        }
+    }
+
+    public static void showMenu(){
+        System.out.println("""
+              \nMenu App ZonaFit select to option number:
                     1. Show users
                     2. Find user
                     3. Add user
@@ -30,9 +55,16 @@ public class ZonaFitApp {
                     5. Delete user
                     6. Exit
                \s""");
+    }
 
-            int option = Integer.parseInt(scanner.next());
+    public static boolean getOptions(Scanner scanner, boolean leave){
+        IClientDAO clientDao = new ClientDAO();
+        boolean result;
+        int option = Integer.parseInt(scanner.next());
 
+        if (option <= 0 || option >= 7){
+            System.out.println("Option number no exist in the menu...");
+        }else {
             switch (option){
                 case 1 -> {
                     List<ClientFit> listUser = clientDao.listClients();
@@ -80,15 +112,11 @@ public class ZonaFitApp {
 
                     if (result) System.out.println("User deleted success.");
                 }
-                case 6 -> leave = true;
+                case 6 -> {
+                    return true;
+                }
             }
-
-            System.out.println("\nDo you want to select another option? Yes/No");
-            String question = scanner.next().toLowerCase();
-            if (question.equals("no")) {
-                leave = true;
-            }
-
         }
+        return false;
     }
 }
