@@ -16,12 +16,13 @@ public class ZonaFitApp {
 
     public static void fitZoneApp(){
         var scanner = new Scanner(System.in);
+        IClientDAO clientDao = new ClientDAO();
         boolean leave = false;
 
         while (!leave){
             try{
-                showMenu();
-                leave = getOptions(scanner, leave);
+                int selectOption = showMenu(scanner);
+                leave = getOptions(scanner, selectOption, clientDao);
             }catch (Exception e){
                 System.out.println("Error to execute options: " + e.getMessage());
             }
@@ -38,14 +39,14 @@ public class ZonaFitApp {
                             leave = true;
                         }
                     }else {
-                        System.out.println("Incorrect Option. Select to correct answer (Yes/No)\n");
+                        System.out.println("Incorrect Option. Select to correct option (Yes/No)\n");
                     }
                 }
             }
         }
     }
 
-    public static void showMenu(){
+    public static int showMenu(Scanner scanner){
         System.out.println("""
               \nMenu App ZonaFit select to option number:
                     1. Show users
@@ -55,17 +56,15 @@ public class ZonaFitApp {
                     5. Delete user
                     6. Exit
                \s""");
+        return Integer.parseInt(scanner.next());
     }
 
-    public static boolean getOptions(Scanner scanner, boolean leave){
-        IClientDAO clientDao = new ClientDAO();
+    public static boolean getOptions(Scanner scanner, int selectOption, IClientDAO clientDao){
         boolean result;
-        int option = Integer.parseInt(scanner.next());
-
-        if (option <= 0 || option >= 7){
+        if (selectOption <= 0 || selectOption >= 7){
             System.out.println("Option number no exist in the menu...");
         }else {
-            switch (option){
+            switch (selectOption){
                 case 1 -> {
                     List<ClientFit> listUser = clientDao.listClients();
                     listUser.forEach(System.out::println);
